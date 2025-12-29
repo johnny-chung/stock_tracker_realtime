@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pymongo
+python-dotenv
+pydantic
+dnspython
+redis
+websockets
+pytest
+pydantic-settings
+httpx
