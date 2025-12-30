@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: live-tracker
+  namespace: stock-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: live-tracker
+  template:
+    metadata:
+      labels:
+        app: live-tracker
+    spec:
+      containers:
+        - name: live-tracker
+          # Use an image name you will build locally (e.g. live-tracker:latest) or push to a registry
+          image: td-live-tracker:latest
+          imagePullPolicy: IfNotPresent
+          # If your app exposes a port (e.g. for a health endpoint) update this section
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: realtime-secrets
+            - configMapRef:
+                name: realtime-config
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: live-tracker-service
+  namespace: stock-tracker
+spec:
+  selector:
+    app: live-tracker
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+# Notes:
+# - This Deployment assumes the secret `realtime-secrets` and ConfigMap `realtime-config` exist in the
+#   `stock_tracker` namespace (we updated them in the repo).
+# - For local image usage with a cluster, see the README notes in the repository about imagePullPolicy
+#   and local registries. ArgoCD and Kubernetes must be able to pull or access the image.

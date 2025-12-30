@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - live-tracker-depl.yaml
+  - real-time-depl.yaml
+  - stock-tracker-ingress.yaml
+
+# Optional: set namespace for all namespaced resources (useful if manifests omit metadata.namespace)
+namespace: stock-tracker

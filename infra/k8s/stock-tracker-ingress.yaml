@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stocker-tracker-ingress
+  namespace: stock-tracker
+  annotations:
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: live-tracker-realtime.goodmanltd.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: realtime-service
+                port:
+                  number: 8001
+    - host: live-tracker.goodmanltd.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: live-tracker-service
+                port:
+                  number: 8080
+  # tls:
+  #   - hosts:
+  #       - live-tracker-realtime.goodmanltd.com
+  #     secretName: realtime-tls
