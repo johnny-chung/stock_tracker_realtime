@@ -1,13 +1,16 @@
 import asyncio
+import os
 import json
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from .websocket_manager import ConnectionManager
-from .change_listener import start_change_listener
-from .config import settings
-import asyncio
+# Use simple absolute package imports. Prefer running as a module
+# (python -m realtime_service.main) so package-relative imports inside
+# submodules work without hacks.
+from websocket_manager import ConnectionManager
+from change_listener import start_change_listener
+from config import settings
 
 app = FastAPI(title="Realtime WebSocket Service")
 manager = ConnectionManager()
@@ -24,7 +27,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     # validate settings
-    from .config import settings
+    # settings already imported at module scope
     if not settings.MONGO_URI:
         raise RuntimeError("MONGO_URI is not set. Please set it in env or live_tracker/.env")
     if not settings.MONGO_DB_NAME:
@@ -127,4 +130,7 @@ async def websocket_notifications_symbol(websocket: WebSocket, symbol: str, toke
 
 
 if __name__ == "__main__":
-    uvicorn.run("realtime_service.main:app", host=settings.HOST, port=settings.PORT, reload=True)
+    # run the app instance directly so we don't force-import the package name
+    # disable auto-reload on Windows shells that may lack required tools
+    reload_flag = False if os.name == "nt" else True
+    uvicorn.run(app, host=settings.HOST, port=settings.PORT, reload=reload_flag)

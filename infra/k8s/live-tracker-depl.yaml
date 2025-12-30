@@ -17,7 +17,7 @@ spec:
         - name: live-tracker
           # Use an image name you will build locally (e.g. live-tracker:latest) or push to a registry
           image: td-live-tracker:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           # If your app exposes a port (e.g. for a health endpoint) update this section
           ports:
             - containerPort: 8080
