@@ -16,7 +16,7 @@ spec:
       containers:
         - name: realtime-service
           image: goodmanisltd/td-realtime-service:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8001
           envFrom:
