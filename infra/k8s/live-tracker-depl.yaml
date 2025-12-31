@@ -24,8 +24,6 @@ spec:
           envFrom:
             - secretRef:
                 name: realtime-secrets
-            - configMapRef:
-                name: realtime-config
           livenessProbe:
             httpGet:
               path: /health
