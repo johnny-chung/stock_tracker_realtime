@@ -5,12 +5,19 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Query
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-# Use simple absolute package imports. Prefer running as a module
-# (python -m realtime_service.main) so package-relative imports inside
-# submodules work without hacks.
-from websocket_manager import ConnectionManager
-from change_listener import start_change_listener
-from config import settings
+# Import helpers: prefer package-relative imports when run as a module
+# but fall back to plain imports when running the file directly (e.g.
+# `python main.py`) so the project is runnable both ways.
+try:
+    # when running as `python -m realtime_service.main` or via uvicorn module path
+    from .websocket_manager import ConnectionManager
+    from .change_listener import start_change_listener
+    from .config import settings
+except Exception:
+    # fallback to direct imports when the package context is not present
+    from websocket_manager import ConnectionManager  # type: ignore
+    from change_listener import start_change_listener  # type: ignore
+    from config import settings  # type: ignore
 
 app = FastAPI(title="Realtime WebSocket Service")
 manager = ConnectionManager()

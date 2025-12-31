@@ -3,7 +3,12 @@ import json
 import traceback
 from pymongo import MongoClient
 
-from config import settings
+try:
+    # package-relative import when running as module
+    from .config import settings
+except Exception:
+    # fallback when running file directly
+    from config import settings  # type: ignore
 
 
 def _watch_loop(uri: str, db_name: str, manager, loop):
